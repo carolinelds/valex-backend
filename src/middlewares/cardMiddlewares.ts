@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as companyRepository from "./../repositories/companyRepository.js";
+import * as cardRepository from "./../repositories/cardRepository.js";
 import errorResponses from "./../responses/errorResponses.js";
 
 export async function checkApiKey(req: Request, res: Response, next: NextFunction){
@@ -11,5 +12,14 @@ export async function checkApiKey(req: Request, res: Response, next: NextFunctio
     }
 
     next();
-}   
+}
 
+export async function checkCardType(req: Request, res: Response, next: NextFunction){
+    const { type } : { type: string } = req.body;
+
+    if (!cardRepository.isTransactionType(type)) {
+        return errorResponses.notFound("Card type");
+    }
+
+    next();
+}

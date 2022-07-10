@@ -7,34 +7,26 @@ import errorResponses from "../responses/errorResponses.js";
 import * as employeeRepository from "./../repositories/employeeRepository.js";
 import * as cardRepository from "./../repositories/cardRepository.js";
 
-export async function createCardService(companyId: number, employeeId: number, type: string) {
+export async function createCardService(companyId: number, employeeId: number, type: cardRepository.TransactionTypes) {
 
-    /* FIXME: turn into middlewares ---------------------- */
+    const employee = await checkEmployeeIsRegistered(employeeId);
 
-            const employee = await checkEmployeeIsRegistered(employeeId);
+    const checkEmployeeIsFromCompany = companyId === employee.companyId;
+    if (!checkEmployeeIsFromCompany) {
+        return errorResponses.notFound("On this company this employee was")
+    }
 
-            const checkEmployeeIsFromCompany = companyId === employee.companyId;
-            if (!checkEmployeeIsFromCompany) {
-                return errorResponses.notFound("On this company this employee was")
-            }
+    await checkDoesNotHaveCardOfThisType(employeeId, type);
 
-            if (!cardRepository.isTransactionType(type)){
-                return errorResponses.notFound("Card type");
-            }
+    const number: string = await generateCardNumber('####-####-####-####');
 
-            await checkDoesNotHaveCardOfThisType(employeeId, type);
+    const cardholderName: string = await generateCardHolderName(employeeId);
 
-    /* end of FIXME -------------------------------------- */
+    const securityCode: string = generateSecurityCode();
 
-    const number : string = await generateCardNumber('####-####-####-####');
-    
-    const cardholderName : string = await generateCardHolderName(employeeId);
+    const expirationDate: string = generateExpirationDate();
 
-    const securityCode : string = generateSecurityCode();
-
-    const expirationDate : string = generateExpirationDate();
-    
-    const cardData : cardRepository.CardInsertData = {
+    const cardData: cardRepository.CardInsertData = {
         employeeId,
         number,
         cardholderName,
@@ -46,48 +38,44 @@ export async function createCardService(companyId: number, employeeId: number, t
         isBlocked: true,
         type
     };
-    
+
     await cardRepository.insert(cardData);
 }
 
-/* FIXME: turn into middlewares ---------------------- */
+async function checkEmployeeIsRegistered(employeeId: number): Promise<any> {
+    const employee = await employeeRepository.findById(employeeId);
+    if (!employee) {
+        return errorResponses.notFound("Employee");
+    }
 
-        async function checkEmployeeIsRegistered(employeeId: number): Promise<any> {
-            const employee = await employeeRepository.findById(employeeId);
-            if (!employee) {
-                return errorResponses.notFound("Employee");
-            }
+    return employee;
+}
 
-            return employee;
-        }
+async function checkDoesNotHaveCardOfThisType(employeeId: number, type: cardRepository.TransactionTypes): Promise<any> {
 
-        async function checkDoesNotHaveCardOfThisType(employeeId: number, type: cardRepository.TransactionTypes): Promise<any> {
-            
-            const cardOfThisType = await cardRepository.findByTypeAndEmployeeId(type, employeeId);
-            if (cardOfThisType){
-                return errorResponses.conflict("A card of this type for this employee is");
-            }
+    const cardOfThisType = await cardRepository.findByTypeAndEmployeeId(type, employeeId);
+    if (cardOfThisType) {
+        return errorResponses.conflict("A card of this type for this employee is");
+    }
 
-            return;
-        }
+    return;
+}
 
-/* end of FIXME -------------------------------------- */
+async function generateCardNumber(format: string): Promise<string> {
 
-async function generateCardNumber(format: string) : Promise<string> {
-    
-    let cardNumber : string = faker.finance.creditCardNumber(format);
+    let cardNumber: string = faker.finance.creditCardNumber(format);
 
     let cardWithThisNumber = await cardRepository.findByNumber(cardNumber);
-    
-    while (cardWithThisNumber){
+
+    while (cardWithThisNumber) {
         cardNumber = faker.finance.creditCardNumber();
         cardWithThisNumber = await cardRepository.findByNumber(cardNumber);
     }
-    
+
     return cardNumber;
 }
 
-async function generateCardHolderName(employeeId: number) : Promise<string> {
+async function generateCardHolderName(employeeId: number): Promise<string> {
 
     const { fullName } = await employeeRepository.findById(employeeId);
 
@@ -96,10 +84,10 @@ async function generateCardHolderName(employeeId: number) : Promise<string> {
     const initialName = temp[0];
     const lastName = temp[temp.length - 1];
 
-    let middleNames = temp.filter((name, index) => { 
+    let middleNames = temp.filter((name, index) => {
         return (
-            name.length >= 3 && 
-            index !== 0 && 
+            name.length >= 3 &&
+            index !== 0 &&
             index !== temp.length - 1
         )
     });
@@ -111,7 +99,7 @@ async function generateCardHolderName(employeeId: number) : Promise<string> {
     return initialName + ' ' + shortMiddleNames + ' ' + lastName;
 }
 
-function generateSecurityCode() : string {
+function generateSecurityCode(): string {
     const securityCode = faker.finance.creditCardCVV();
 
     const cryptr = new Cryptr(process.env.CRYPT_KEY);
@@ -121,12 +109,12 @@ function generateSecurityCode() : string {
     return hashedSecurityCode;
 }
 
-function generateExpirationDate() : string {
+function generateExpirationDate(): string {
 
-    const monthNow : string = (dayjs()['$M']).toString().padStart(2, '0');
-    const yearNow : number = (dayjs()['$y']);
+    const monthNow: string = (dayjs()['$M']).toString().padStart(2, '0');
+    const yearNow: number = (dayjs()['$y']);
 
-    const expirationYear : string = (yearNow + 5).toString().slice(2);
+    const expirationYear: string = (yearNow + 5).toString().slice(2);
 
     return monthNow + '/' + expirationYear;
 }
