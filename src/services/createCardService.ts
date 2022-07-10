@@ -1,4 +1,6 @@
-import { faker } from '@faker-js/faker';
+import { faker } from "@faker-js/faker";
+import Cryptr from "cryptr";
+import "./../setup.js";
 
 import errorResponses from "../responses/errorResponses.js";
 import * as employeeRepository from "./../repositories/employeeRepository.js";
@@ -24,22 +26,25 @@ export async function createCardService(companyId: number, employeeId: number, t
     /* end of FIXME -------------------------------------- */
 
     /* 
-    preciso gerar agora:
-        - [OK] employeeId: do BODY
+        - [OK] employeeId: from BODY
         - [OK] number: UNIQUE
-        - cardHolderName
-        - securityCode
+        - [OK] cardHolderName
+        - [OK] securityCode
         - expirationDate
-        - password
-        - isVirtual: false
-        - originalCardId: null 
-        - isBlocked: true
-        - [OK] type: do BODY
+        - [OK] password: null
+        - [OK] isVirtual: false
+        - [OK] originalCardId: null 
+        - [OK] isBlocked: true
+        - [OK] type: from BODY
     */    
  
     const cardNumber : string = await generateCardNumber('####-####-####-####');
     
     const cardHolderName : string = await generateCardHolderName(employeeId);
+
+    const securityCode : string = generateSecurityCode();
+
+
 }
 
 /* FIXME: turn into middlewares ---------------------- */
@@ -101,4 +106,14 @@ async function generateCardHolderName(employeeId: number) : Promise<string> {
     const shortMiddleNames = middleNames.join(' ');
 
     return initialName + ' ' + shortMiddleNames + ' ' + lastName;
+}
+
+function generateSecurityCode() : string {
+    const securityCode = faker.finance.creditCardCVV();
+
+    const cryptr = new Cryptr(process.env.CRYPT_KEY);
+
+    const hashedSecurityCode = cryptr.encrypt(securityCode);
+
+    return hashedSecurityCode;
 }
