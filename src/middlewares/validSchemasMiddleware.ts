@@ -2,8 +2,8 @@ import { stripHtml } from "string-strip-html";
 import { Request, Response, NextFunction } from "express";
 import errorResponse from "./../responses/errorResponses.js";
 
-export default function validSchema(schema: any, entity: string) {
-    return async (req: Request, res: Response, next: NextFunction) => {
+export default function validSchema(schema: any, entity: string) {    
+    return async (req: Request, res: Response, next: NextFunction) => {       
         const body: object = req.body;
         const schemaBody: object = {};
 

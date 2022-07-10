@@ -1,10 +1,16 @@
 import { Router } from "express";
 import { createCard } from "../controllers/cardController.js";
 import { checkApiKey, checkCardType } from "../middlewares/cardMiddlewares.js";
+import validSchema from "./../middlewares/validSchemasMiddleware.js";
+import createCardSchema from "./../schemas/createCardSchema.js";
 
 const cardRouter = Router();
 
-// FIXME: create and add validSchema middleware
-cardRouter.post("/card/create", checkApiKey, checkCardType, createCard);
+cardRouter.post("/card/create",
+    validSchema(createCardSchema, "Employee and/or card type"),
+    checkApiKey,
+    checkCardType,
+    createCard
+);
 
 export default cardRouter;
