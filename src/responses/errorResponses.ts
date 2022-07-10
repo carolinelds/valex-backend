@@ -12,9 +12,17 @@ export function conflict(entity: string):{ type: string, message: string }{
     }
 }
 
+export function badRequest(entity: string):{ type: string, message: string}{
+    throw {
+        type: "error_bad_request",
+        message: `${entity} is not valid, bad request.`
+    }    
+}
+
 const errorResponses = {
     notFound,
-    conflict
+    conflict,
+    badRequest
 };
 
 export default errorResponses;
