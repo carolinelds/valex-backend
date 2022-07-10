@@ -37,7 +37,9 @@ export async function createCardService(companyId: number, employeeId: number, t
         - [OK] type: do BODY
     */    
  
-    const cardNumber : string = await generateCardNumber('####-####-####-####'); 
+    const cardNumber : string = await generateCardNumber('####-####-####-####');
+    
+    const cardHolderName : string = await generateCardHolderName(employeeId);
 }
 
 /* FIXME: turn into middlewares ---------------------- */
@@ -75,4 +77,28 @@ async function generateCardNumber(format: string) : Promise<string> {
     }
     
     return cardNumber;
+}
+
+async function generateCardHolderName(employeeId: number) : Promise<string> {
+
+    const { fullName } = await employeeRepository.findById(employeeId);
+
+    let temp = fullName.toUpperCase().split(' ');
+
+    const initialName = temp[0];
+    const lastName = temp[temp.length - 1];
+
+    let middleNames = temp.filter((name, index) => { 
+        return (
+            name.length >= 3 && 
+            index !== 0 && 
+            index !== temp.length - 1
+        )
+    });
+    middleNames = middleNames.map(name => {
+        return name[0];
+    });
+    const shortMiddleNames = middleNames.join(' ');
+
+    return initialName + ' ' + shortMiddleNames + ' ' + lastName;
 }
