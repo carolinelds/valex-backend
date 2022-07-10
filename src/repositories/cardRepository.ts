@@ -3,8 +3,9 @@ import connectDB from "./../database.js";
 
 const transactionTypes = ["groceries", "restaurant", "transport", "education", "health"] as const;
 export type TransactionTypes = (typeof transactionTypes)[number];
-
-export const isTransactionType = (x: any) : x is TransactionTypes => transactionTypes.includes(x);
+export function isTransactionType(x: any): x is TransactionTypes {
+  return transactionTypes.includes(x);
+}
 
 export interface Card {
   id: number;
@@ -34,6 +35,17 @@ export async function findById(id: number) {
   const result = await connection.query<Card, [number]>(
     "SELECT * FROM cards WHERE id=$1",
     [id]
+  );
+
+  return result.rows[0];
+}
+
+export async function findByNumber(cardNumber: string){
+  const connection = await connectDB();
+
+  const result = await connection.query<Card, [string]>(
+    `SELECT * FROM cards WHERE number=$1`,
+    [cardNumber]
   );
 
   return result.rows[0];
