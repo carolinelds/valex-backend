@@ -1,12 +1,10 @@
 import { mapObjectToUpdateQuery } from "../utils/sqlUtils.js";
-import  connectDB  from "./../database.js";
+import connectDB from "./../database.js";
 
-export type TransactionTypes =
-  | "groceries"
-  | "restaurant"
-  | "transport"
-  | "education"
-  | "health";
+const transactionTypes = ["groceries", "restaurant", "transport", "education", "health"] as const;
+export type TransactionTypes = (typeof transactionTypes)[number];
+
+export const isTransactionType = (x: any) : x is TransactionTypes => transactionTypes.includes(x);
 
 export interface Card {
   id: number;
@@ -32,8 +30,8 @@ export async function find() {
 }
 
 export async function findById(id: number) {
-    const connection = await connectDB();
-    const result = await connection.query<Card, [number]>(
+  const connection = await connectDB();
+  const result = await connection.query<Card, [number]>(
     "SELECT * FROM cards WHERE id=$1",
     [id]
   );
