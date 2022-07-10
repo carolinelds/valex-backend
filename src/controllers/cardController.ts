@@ -10,7 +10,7 @@ export async function createCard(req: Request, res: Response){
 
     const { employeeId, type } : { employeeId: number, type: string } = req.body;
         
-    const result = await createCardService(company.id, employeeId, type);
+    await createCardService(company.id, employeeId, type);
 
-    res.sendStatus(200);
+    res.status(200).send("Card created.");
 }

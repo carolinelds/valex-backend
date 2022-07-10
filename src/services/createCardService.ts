@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import dayjs from "dayjs";
 import Cryptr from "cryptr";
 import "./../setup.js";
 
@@ -25,26 +26,28 @@ export async function createCardService(companyId: number, employeeId: number, t
 
     /* end of FIXME -------------------------------------- */
 
-    /* 
-        - [OK] employeeId: from BODY
-        - [OK] number: UNIQUE
-        - [OK] cardHolderName
-        - [OK] securityCode
-        - expirationDate
-        - [OK] password: null
-        - [OK] isVirtual: false
-        - [OK] originalCardId: null 
-        - [OK] isBlocked: true
-        - [OK] type: from BODY
-    */    
- 
-    const cardNumber : string = await generateCardNumber('####-####-####-####');
+    const number : string = await generateCardNumber('####-####-####-####');
     
-    const cardHolderName : string = await generateCardHolderName(employeeId);
+    const cardholderName : string = await generateCardHolderName(employeeId);
 
     const securityCode : string = generateSecurityCode();
 
-
+    const expirationDate : string = generateExpirationDate();
+    
+    const cardData : cardRepository.CardInsertData = {
+        employeeId,
+        number,
+        cardholderName,
+        securityCode,
+        expirationDate,
+        password: null,
+        isVirtual: false,
+        originalCardId: null,
+        isBlocked: true,
+        type
+    };
+    
+    await cardRepository.insert(cardData);
 }
 
 /* FIXME: turn into middlewares ---------------------- */
@@ -59,10 +62,10 @@ export async function createCardService(companyId: number, employeeId: number, t
         }
 
         async function checkDoesNotHaveCardOfThisType(employeeId: number, type: cardRepository.TransactionTypes): Promise<any> {
-
+            
             const cardOfThisType = await cardRepository.findByTypeAndEmployeeId(type, employeeId);
             if (cardOfThisType){
-                return errorResponses.conflict("A card of this type is");
+                return errorResponses.conflict("A card of this type for this employee is");
             }
 
             return;
@@ -116,4 +119,14 @@ function generateSecurityCode() : string {
     const hashedSecurityCode = cryptr.encrypt(securityCode);
 
     return hashedSecurityCode;
+}
+
+function generateExpirationDate() : string {
+
+    const monthNow : string = (dayjs()['$M']).toString().padStart(2, '0');
+    const yearNow : number = (dayjs()['$y']);
+
+    const expirationYear : string = (yearNow + 5).toString().slice(2);
+
+    return monthNow + '/' + expirationYear;
 }
