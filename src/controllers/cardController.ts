@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { createCardService } from "./../services/createCardService.js";
 import { activateCardService } from "./../services/activateCardService.js";
+import { getCardTransactionsService } from "../services/getCardTransactionsService.js";
 import * as companyRepository from "./../repositories/companyRepository.js";
 import * as cardRepository from "./../repositories/cardRepository.js";
 
@@ -23,4 +24,12 @@ export async function activateCard(req: Request, res: Response){
     await activateCardService(id, securityCode, password);
 
     res.status(200).send("Card activated.");
+}
+
+export async function getCardTransactions(req: Request, res: Response){
+    const { number, cardholderName, expirationDate } : { number: string, cardholderName: string, expirationDate: string } = req.body;
+    
+    const cardTransactions = await getCardTransactionsService(number, cardholderName, expirationDate);
+
+    res.status(200).send(cardTransactions);
 }
