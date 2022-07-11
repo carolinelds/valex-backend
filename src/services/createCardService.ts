@@ -35,7 +35,7 @@ export async function createCardService(companyId: number, employeeId: number, t
         password: null,
         isVirtual: false,
         originalCardId: null,
-        isBlocked: true,
+        isBlocked: false,
         type
     };
 

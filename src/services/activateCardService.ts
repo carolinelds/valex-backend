@@ -8,7 +8,10 @@ export async function activateCardService(id: number, securityCode: string, pass
 
     const card : cardRepository.Card = await checkCardIsRegistered(id);
     
-    await checkCardHasNotExpired(card);
+    await checkCardHasNotExpired(card.expirationDate);
+
+    checkCardHasNotBeenActivated(card.password);
+
 }
 
 async function checkCardIsRegistered(id: number) : Promise<any>{
@@ -19,11 +22,11 @@ async function checkCardIsRegistered(id: number) : Promise<any>{
     return card;
 }
 
-async function checkCardHasNotExpired(card: cardRepository.Card){
+async function checkCardHasNotExpired(expirationDate: string) : Promise<any>{
     dayjs.extend(customParseFormat);
 
-    const expMonth = (parseInt(card.expirationDate.slice(0,2))+1).toString().padStart(2, '0');
-    const expYear = card.expirationDate.slice(3);
+    const expMonth = (parseInt(expirationDate.slice(0,2))+1).toString().padStart(2, '0');
+    const expYear = expirationDate.slice(3);
     const expDate = expMonth + '-01-' + expYear;
 
     const formatedExpirationDate = dayjs(dayjs(expDate, 'MM-DD-YY')['$d']);
@@ -32,6 +35,14 @@ async function checkCardHasNotExpired(card: cardRepository.Card){
     const diff = formatedExpirationDate.diff(today); 
     if (diff <= 0){
         return errorResponses.unprocessableEntity("card expiration date");
+    }
+
+    return;
+}
+
+function checkCardHasNotBeenActivated(password: string | null){
+    if (password !== null){
+        return errorResponses.conflict("A password for this card is");
     }
 
     return;
