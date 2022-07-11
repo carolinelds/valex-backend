@@ -3,6 +3,7 @@ import { createCardService } from "./../services/createCardService.js";
 import { activateCardService } from "./../services/activateCardService.js";
 import { getCardTransactionsService } from "../services/getCardTransactionsService.js";
 import { blockCardService } from "./../services/blockCardService.js";
+import { unblockCardService } from "./../services/unblockCardService.js";
 import * as companyRepository from "./../repositories/companyRepository.js";
 import * as cardRepository from "./../repositories/cardRepository.js";
 
@@ -41,4 +42,12 @@ export async function blockCard(req: Request, res: Response){
     await blockCardService(id, password);
 
     res.status(200).send("Card blocked.");
+}
+
+export async function unblockCard(req: Request, res: Response){
+    const { id, password } : { id: number, password: string } = req.body;
+
+    await unblockCardService(id, password);
+
+    res.status(200).send("Card unblocked.");
 }

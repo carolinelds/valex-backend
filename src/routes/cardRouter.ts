@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCard, activateCard, getCardTransactions, blockCard } from "../controllers/cardController.js";
+import { createCard, activateCard, getCardTransactions, blockCard, unblockCard } from "../controllers/cardController.js";
 import { checkApiKey, checkCardType } from "../middlewares/cardMiddlewares.js";
 import validSchema from "./../middlewares/validSchemasMiddleware.js";
 import createCardSchema from "./../schemas/createCardSchema.js";
@@ -29,6 +29,11 @@ cardRouter.get("/card",
 cardRouter.post("/card/block",
     validSchema(blockUnblockCardSchema, "The selected card"),
     blockCard 
+);
+
+cardRouter.post("/card/unblock",
+    validSchema(blockUnblockCardSchema, "The selected card"),
+    unblockCard 
 );
 
 export default cardRouter;
