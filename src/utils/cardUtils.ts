@@ -30,7 +30,6 @@ export async function checkCardHasNotExpired(expirationDate: string): Promise<an
     return;
 }
 
-/* FIXME: turn into a single function ---------------- */
 export function checkCardHasNotBeenActivated(password: string | null) {
     if (password !== null) {
         return errorResponses.conflict("A password for this card is");
@@ -46,8 +45,8 @@ export function checkCardHasBeenActivated(password: string | null) {
 
     return;
 }
-/* FIXME: end of FIXME ------------------------------- */
 
+/* FIXME: add bcrypt compareSync to checkPassword */
 export function checkPassword(cardPassword: string, inputPassword: string) {
     if (cardPassword !== inputPassword) {
         return errorResponses.unprocessableEntity("card password");

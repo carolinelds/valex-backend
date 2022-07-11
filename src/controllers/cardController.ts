@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createCardService } from "./../services/createCardService.js";
 import { activateCardService } from "./../services/activateCardService.js";
 import { getCardTransactionsService } from "../services/getCardTransactionsService.js";
+import { blockCardService } from "./../services/blockCardService.js";
 import * as companyRepository from "./../repositories/companyRepository.js";
 import * as cardRepository from "./../repositories/cardRepository.js";
 
@@ -32,4 +33,12 @@ export async function getCardTransactions(req: Request, res: Response){
     const cardTransactions = await getCardTransactionsService(number, cardholderName, expirationDate);
 
     res.status(200).send(cardTransactions);
+}
+
+export async function blockCard(req: Request, res: Response){
+    const { id, password } : { id: number, password: string } = req.body;
+
+    await blockCardService(id, password);
+
+    res.status(200).send("Card blocked.");
 }
