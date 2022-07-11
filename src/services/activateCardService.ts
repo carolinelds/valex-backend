@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs";
 import Cryptr from "cryptr";
+import bcrypt from "bcrypt";
 import "./../setup.js";
 
 import * as cardRepository from "./../repositories/cardRepository.js";
@@ -15,6 +16,11 @@ export async function activateCardService(id: number, securityCode: string, pass
     checkCardHasNotBeenActivated(card.password);
 
     await validateSecurityCode(card, securityCode);
+
+    const SALT = +process.env.CRYPT_KEY;
+    const hashedPassword = bcrypt.hashSync(password, SALT);
+
+    await cardRepository.update(id, { password: hashedPassword });
 }
 
 async function checkCardIsRegistered(id: number) : Promise<any>{
