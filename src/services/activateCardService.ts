@@ -14,7 +14,7 @@ export async function activateCardService(id: number, securityCode: string, pass
     
     await cardUtils.checkCardHasNotExpired(card.expirationDate);
 
-    checkCardHasNotBeenActivated(card.password);
+    cardUtils.checkCardHasNotBeenActivated(card.password);
 
     await validateSecurityCode(card, securityCode);
 
@@ -22,14 +22,6 @@ export async function activateCardService(id: number, securityCode: string, pass
     const hashedPassword = bcrypt.hashSync(password, SALT);
 
     await cardRepository.update(id, { password: hashedPassword });
-}
-
-function checkCardHasNotBeenActivated(password: string | null){
-    if (password !== null){
-        return errorResponses.conflict("A password for this card is");
-    }
-
-    return;
 }
 
 async function validateSecurityCode(card: cardRepository.Card, securityCode : string){
