@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs";
+import bcrypt from "bcrypt";
 
 import * as cardRepository from "./../repositories/cardRepository.js";
 import errorResponses from "./../responses/errorResponses.js";
@@ -46,9 +47,8 @@ export function checkCardHasBeenActivated(password: string | null) {
     return;
 }
 
-/* FIXME: add bcrypt compareSync to checkPassword */
 export function checkPassword(cardPassword: string, inputPassword: string) {
-    if (cardPassword !== inputPassword) {
+    if (!bcrypt.compareSync(inputPassword, cardPassword)) {
         return errorResponses.unprocessableEntity("card password");
     }
 
