@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { createCard, activateCard, getCardTransactions, blockCard, unblockCard } from "../controllers/cardController.js";
 import { checkApiKey, checkCardType } from "../middlewares/cardMiddlewares.js";
-import validSchema from "./../middlewares/validSchemasMiddleware.js";
-import createCardSchema from "./../schemas/createCardSchema.js";
-import activateCardSchema from "./../schemas/activateCardSchema.js";
-import getCardTransactionsSchema from "./../schemas/getCardTransactionsSchema.js";
-import blockUnblockCardSchema from "./../schemas/blockUnblockCardSchema.js";
+
+import validSchema from "../middlewares/validSchemasMiddleware.js";
+import createCardSchema from "../schemas/createCardSchema.js";
+import activateCardSchema from "../schemas/activateCardSchema.js";
+import getCardTransactionsSchema from "../schemas/getCardTransactionsSchema.js";
+import blockUnblockCardSchema from "../schemas/blockUnblockCardSchema.js";
 
 const cardRouter = Router();
 
