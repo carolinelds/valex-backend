@@ -15,7 +15,7 @@ export async function checkApiKey(req: Request, res: Response, next: NextFunctio
 }
 
 export async function checkCardType(req: Request, res: Response, next: NextFunction){
-    const { type } : { type: string } = req.body;
+    const { type } : { type: string } = res.locals.body;
 
     if (!cardRepository.isTransactionType(type)) {
         return errorResponses.notFound("Card type");

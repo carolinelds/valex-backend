@@ -12,8 +12,11 @@ export async function createCard(req: Request, res: Response){
     const apiKey = req.headers['x-api-key'];
     const company = await companyRepository.findByApiKey(apiKey.toString());
 
-    const { employeeId, type } : { employeeId: number, type: cardRepository.TransactionTypes } = req.body;
+    const { employeeId, type } : { employeeId: number, type: cardRepository.TransactionTypes } = res.locals.body;
     
+    console.log("controller:");
+    console.log(res.locals.body);
+
     await createCardService(company.id, employeeId, type);
 
     res.status(200).send("Card created.");
@@ -21,7 +24,7 @@ export async function createCard(req: Request, res: Response){
 
 export async function activateCard(req: Request, res: Response){
     const { id, securityCode, password } : 
-    { id: number, securityCode: string, password: string } = req.body;
+    { id: number, securityCode: string, password: string } = res.locals.body;
 
     await activateCardService(id, securityCode, password);
 
@@ -29,7 +32,7 @@ export async function activateCard(req: Request, res: Response){
 }
 
 export async function getCardTransactions(req: Request, res: Response){
-    const { number, cardholderName, expirationDate } : { number: string, cardholderName: string, expirationDate: string } = req.body;
+    const { number, cardholderName, expirationDate } : { number: string, cardholderName: string, expirationDate: string } = res.locals.body;
     
     const cardTransactions = await getCardTransactionsService(number, cardholderName, expirationDate);
 
@@ -37,7 +40,7 @@ export async function getCardTransactions(req: Request, res: Response){
 }
 
 export async function blockCard(req: Request, res: Response){
-    const { id, password } : { id: number, password: string } = req.body;
+    const { id, password } : { id: number, password: string } = res.locals.body;
 
     await blockCardService(id, password);
 
@@ -45,7 +48,7 @@ export async function blockCard(req: Request, res: Response){
 }
 
 export async function unblockCard(req: Request, res: Response){
-    const { id, password } : { id: number, password: string } = req.body;
+    const { id, password } : { id: number, password: string } = res.locals.body;
 
     await unblockCardService(id, password);
 

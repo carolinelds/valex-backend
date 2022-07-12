@@ -20,8 +20,8 @@ export default function validSchema(schema: any, entity: string) {
         if (validation.error) {
             return errorResponse.badRequest(entity);
         }
-
-        res.locals.body = validation;
+        
+        res.locals.body = validation.value;
 
         next();
     }
