@@ -10,7 +10,7 @@ export async function activateCardService(id: number, securityCode: string, pass
 
     const card : cardRepository.Card = await cardUtils.checkCardIsRegistered(id);
     
-    await cardUtils.checkCardHasNotExpired(card.expirationDate);
+    cardUtils.checkCardHasNotExpired(card.expirationDate);
 
     cardUtils.checkCardHasNotBeenActivated(card.password);
 

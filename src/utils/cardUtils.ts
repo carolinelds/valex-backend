@@ -13,7 +13,7 @@ export async function checkCardIsRegistered(id: number): Promise<any> {
     return card;
 }
 
-export async function checkCardHasNotExpired(expirationDate: string): Promise<any> {
+export function checkCardHasNotExpired(expirationDate: string) {
     dayjs.extend(customParseFormat);
 
     const expMonth = (parseInt(expirationDate.slice(0, 2)) + 1).toString().padStart(2, '0');

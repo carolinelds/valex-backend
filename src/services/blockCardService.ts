@@ -4,7 +4,7 @@ import * as cardUtils from "./../utils/cardUtils.js";
 export async function blockCardService(id: number, password: string){
     const card = await cardUtils.checkCardIsRegistered(id);
 
-    await cardUtils.checkCardHasNotExpired(card.expirationDate);
+    cardUtils.checkCardHasNotExpired(card.expirationDate);
 
     const blockedStatusToCheck = false;
     cardUtils.checkCardBlockedStatus(card.isBlocked, blockedStatusToCheck);

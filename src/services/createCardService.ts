@@ -6,15 +6,13 @@ import "./../setup.js";
 import errorResponses from "../responses/errorResponses.js";
 import * as employeeRepository from "./../repositories/employeeRepository.js";
 import * as cardRepository from "./../repositories/cardRepository.js";
+import * as employeeUtils from "./../utils/employeeUtils.js";
 
 export async function createCardService(companyId: number, employeeId: number, type: cardRepository.TransactionTypes) {
 
     const employee = await checkEmployeeIsRegistered(employeeId);
 
-    const checkEmployeeIsFromCompany = companyId === employee.companyId;
-    if (!checkEmployeeIsFromCompany) {
-        return errorResponses.notFound("On this company this employee was")
-    }
+    employeeUtils.checkEmployeeIsFromCompany(companyId, employee.companyId);
 
     await checkDoesNotHaveCardOfThisType(employeeId, type);
 

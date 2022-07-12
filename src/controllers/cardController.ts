@@ -4,18 +4,18 @@ import { activateCardService } from "./../services/activateCardService.js";
 import { getCardTransactionsService } from "../services/getCardTransactionsService.js";
 import { blockCardService } from "./../services/blockCardService.js";
 import { unblockCardService } from "./../services/unblockCardService.js";
+import { rechargeCardService } from "./../services/rechargeCardService.js";
 import * as companyRepository from "./../repositories/companyRepository.js";
 import * as cardRepository from "./../repositories/cardRepository.js";
 
 export async function createCard(req: Request, res: Response){
     
     const apiKey = req.headers['x-api-key'];
+
+    // FIXME: make controller not have to call a repository
     const company = await companyRepository.findByApiKey(apiKey.toString());
 
     const { employeeId, type } : { employeeId: number, type: cardRepository.TransactionTypes } = res.locals.body;
-    
-    console.log("controller:");
-    console.log(res.locals.body);
 
     await createCardService(company.id, employeeId, type);
 
