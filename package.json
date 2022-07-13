@@ -1,12 +1,12 @@
 {
-  "name": "star-fighters-api",
+  "name": "valex-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
-	  "start": "node dist/app.js",
+	  "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/server.ts"
   },
