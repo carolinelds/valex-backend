@@ -16,7 +16,7 @@ export async function activateCardService(id: number, securityCode: string, pass
 
     await validateSecurityCode(card, securityCode);
 
-    const SALT = +process.env.CRYPT_KEY;
+    const SALT = +process.env.SALT;
     const hashedPassword = bcrypt.hashSync(password, SALT);
 
     await cardRepository.update(id, { password: hashedPassword });
